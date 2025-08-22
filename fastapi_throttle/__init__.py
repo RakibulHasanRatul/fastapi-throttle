@@ -7,7 +7,9 @@ from functools import wraps
 from typing import Any, Callable
 
 from fastapi import Depends, HTTPException, Request
-from fastapi.params import Depends as DependsParam  # Alias to avoid conflict with fastapi.Depends
+from fastapi.params import (
+    Depends as DependsParam,
+)  # Alias to avoid conflict with fastapi.Depends
 
 
 @dataclass(slots=True)
@@ -112,7 +114,9 @@ class TokenBucketLimiter:
             # Calculate elapsed time in seconds
             elapsed_seconds = (now_ns - bucket.last_refill_ns) / 1e9
             # Add tokens based on elapsed time and refill rate, but don't exceed capacity
-            bucket.tokens = min(self.capacity, bucket.tokens + elapsed_seconds * self.rate)
+            bucket.tokens = min(
+                self.capacity, bucket.tokens + elapsed_seconds * self.rate
+            )
             bucket.last_refill_ns = now_ns  # Update last refill time
 
         # Check if enough tokens are available to consume
@@ -265,7 +269,9 @@ class RateLimiter:
         self._cleanup_usage_memory()
 
         now_ns = time.monotonic_ns()
-        record = self.usage[identifier]  # Get or create the usage record for this identifier
+        record = self.usage[
+            identifier
+        ]  # Get or create the usage record for this identifier
 
         # Fixed Window Logic:
         # If this is the first call for this identifier, or if the current call
@@ -420,7 +426,9 @@ def limit(
             raise HTTPException(
                 status_code=429,
                 detail="Rate limit exceeded",
-                headers={"Retry-After": str(1 / request_per_seconds)},  # Suggest when to retry
+                headers={
+                    "Retry-After": str(1 / request_per_seconds)
+                },  # Suggest when to retry
             )
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -444,11 +452,15 @@ def limit(
         # Inspect the decorated function's signature
         sig = inspect.signature(func)
         # Check if the function already declares a 'Request' parameter
-        has_request_param = any(param.annotation is Request for param in sig.parameters.values())
+        has_request_param = any(
+            param.annotation is Request for param in sig.parameters.values()
+        )
         # Check if the function is an asynchronous coroutine function
         is_async = asyncio.iscoroutinefunction(func)
 
-        def _get_request_from_args(args: tuple[Any, ...], kwargs: dict[str, Any]) -> Request:
+        def _get_request_from_args(
+            args: tuple[Any, ...], kwargs: dict[str, Any]
+        ) -> Request:
             """
             Extracts the Request object from the function arguments.
 
@@ -492,7 +504,9 @@ def limit(
                 """
                 Asynchronous wrapper for functions that already accept a Request.
                 """
-                request = _get_request_from_args(args, kwargs)  # Get Request from existing args
+                request = _get_request_from_args(
+                    args, kwargs
+                )  # Get Request from existing args
                 _limit_access(request)  # Apply rate limit
                 return await func(*args, **kwargs)  # Call original async function
 
@@ -501,7 +515,9 @@ def limit(
                 """
                 Synchronous wrapper for functions that already accept a Request.
                 """
-                request = _get_request_from_args(args, kwargs)  # Get Request from existing args
+                request = _get_request_from_args(
+                    args, kwargs
+                )  # Get Request from existing args
                 _limit_access(request)  # Apply rate limit
                 return func(*args, **kwargs)  # Call original sync function
 
@@ -539,14 +555,19 @@ def limit(
             # parameter. This is crucial for FastAPI to correctly identify and inject
             # the dependency.
             old_sig = inspect.signature(func)
-            new_params = [
-                inspect.Parameter(
-                    "request",  # Name of the injected parameter
-                    inspect.Parameter.KEYWORD_ONLY,  # Enforce it as a keyword-only argument
-                    default=DependsParam(_request_dependency),  # The dependency itself
-                    annotation=Request,  # Type hint for the injected parameter
-                )
-            ] + list(old_sig.parameters.values())  # Add all original parameters
+            new_params = (
+                [
+                    inspect.Parameter(
+                        "request",  # Name of the injected parameter
+                        inspect.Parameter.KEYWORD_ONLY,  # Enforce it as a keyword-only argument
+                        default=DependsParam(
+                            _request_dependency
+                        ),  # The dependency itself
+                        annotation=Request,  # Type hint for the injected parameter
+                    )
+                ]
+                + list(old_sig.parameters.values())
+            )  # Add all original parameters
 
             wrapper = async_reqest_wrapper if is_async else sync_reqest_wrapper
             # Set the modified signature on the wrapper function

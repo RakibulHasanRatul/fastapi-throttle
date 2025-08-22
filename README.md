@@ -8,7 +8,7 @@ A simple, standalone rate limiting solution for FastAPI applications.
 
 This module is designed for ultimate simplicity. There's no `pip install` required!
 
-1.  **Copy the File:** Get the content of [`fastapi_throttle.py`](./fastapi_throttle.py) and paste it into a new file named `fastapi_throttle.py` (or any name you prefer) directly in your FastAPI project.
+1.  **Copy the File:** Get the content of [`fastapi_throttle/__init__.py`](./fastapi_throttle/__init__.py) and paste it into a new file named `fastapi_throttle.py` (or any name you prefer) directly in your FastAPI project.
 2.  **Import and Use:** Import the `limit` decorator from your newly created file and apply it to your FastAPI endpoints.
 
 ## ✨ Features
