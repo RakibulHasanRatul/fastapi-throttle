@@ -1,0 +1,11 @@
+[project]
+name = "fastapi-throttle"
+version = "0.1.0"
+description = "Simple yet fast rate limiting module for fastapi"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Rakibul Hasan Ratul", email = "rakibulhasanratul@proton.me" },
+]
+license = { file = "LICENSE" }
+dependencies = ["fastapi[standard]>=0.116.1"]
