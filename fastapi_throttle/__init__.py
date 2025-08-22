@@ -208,7 +208,7 @@ class RateLimiter:
         request_per_seconds: float = 1.0,
         burst: int = 10,
         clean_up_interval_seconds: int = 60,
-    ):
+    ) -> None:
         self.max_calls = max_calls
         # Convert interval to nanoseconds for high-resolution timing.
         self.interval_ns = interval_seconds * 1_000_000_000
